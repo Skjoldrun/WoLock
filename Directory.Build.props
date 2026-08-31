@@ -1,0 +1,18 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>Tool to remind the user to change his stance from sitting to standing and vice versa</Description>
+    <Company>Skjoldrun</Company>
+    <Authors>David T. Halletz</Authors>
+    <Copyright>Copyright @ $(Company) $([System.DateTime]::UtcNow.ToString(yyyy))</Copyright>
+  </PropertyGroup>
+
+</Project>
