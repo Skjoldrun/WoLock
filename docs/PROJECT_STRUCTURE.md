@@ -42,7 +42,7 @@ WoLock/
 - **`WoLock.Core`** — the reusable library (magic packet, UDP sending, config, smart-guess).
 - **`WoLock.Gui`** — Avalonia UI application (Windows/Linux desktop, Android-ready).
 - **`WoLock.Tui`** — Terminal.Gui application plus CLI (Linux/Windows).
-- **`tests/WoLock.Core.Tests`** — XUnit tests for `WoLock.Core` *(project exists, tests still pending)*.
+- **`tests/WoLock.Core.Tests`** — XUnit tests for `WoLock.Core` (48 passing tests covering magic packet, MAC parsing, config, smart-guess, factory, sender, ping).
 - **`WoLock.Gui`** uses `assets/img/WoLock_Icon.ico` as its application/window title bar icon.
 
 Each project produces its own executable (`WoLock.Gui`, `WoLock.Tui`).

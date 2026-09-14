@@ -62,7 +62,7 @@ This behavior (multiple IPs + ports, broadcast + unicast) is carried over into `
 |-------------------|---------------------------------------------------------------|
 | .NET version      | **.NET 10** (`net10.0`)                                       |
 | GUI               | **Avalonia UI** (Dark theme primary, Light theme toggle)      |
-| TUI               | **Terminal.Gui** (v2), interactive + CLI                      |
+| TUI               | **Terminal.Gui** (1.17.1), interactive + CLI                  |
 | Logging           | **Serilog** (level DEBUG/INFO, non-persistent, file optional) |
 | Packaging         | **Single-File Self-Contained** (Exes); Android APK separate   |
 | Project structure | **Multi-project solution** in one repo                        |
@@ -212,8 +212,9 @@ context in new sessions.
 - [x] Interactive menu (select device, wake)
 - [x] CLI flags (`wol wake <device>`, `wol list`, `--ping`, `--timeout`, `--config`, `--help`)
 - [x] Status display (packet sent / device responds / no response)
+- [x] OneDark Pro dark theme for the interactive UI (`Interactive/OneDarkTheme.cs`)
 
-> **Current status:** Milestones 1–3 are implemented, build cleanly, and the CLI + interactive TUI have been verified. Milestone 4b (unit tests) is now implemented: `tests/WoLock.Core.Tests` contains 48 passing tests covering the core logic, and CI runs `dotnet test`. Milestones 4 (GUI) and 5 (packaging) are still pending.
+> **Current status:** Milestones 1–3 are implemented, build cleanly, and the CLI + interactive TUI have been verified. The interactive TUI uses a OneDark Pro dark theme (rounded window border, colored device list, detail panel, outcome-based status colors). Milestone 4b (unit tests) is now implemented: `tests/WoLock.Core.Tests` contains 48 passing tests covering the core logic, and CI runs `dotnet test`. Milestones 4 (GUI) and 5 (packaging) are still pending.
 
 ### Milestone 4 — GUI (Avalonia)
 - [ ] Base layout + Dark/Light theme
