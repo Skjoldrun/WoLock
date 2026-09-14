@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Tool to remind the user to change his stance from sitting to standing and vice versa</Description>
+    <Description>Tool to send WoL signals to configured devices</Description>
     <Company>Skjoldrun</Company>
     <Authors>David T. Halletz</Authors>
     <Copyright>Copyright @ $(Company) $([System.DateTime]::UtcNow.ToString(yyyy))</Copyright>
