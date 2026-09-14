@@ -197,21 +197,23 @@ It is the working basis for incremental development and can be used as
 context in new sessions.
 
 ### Milestone 1 — Scaffold & Core
-- [ ] Create solution + projects (`WoLock.Core`, `WoLock.Gui`, `WoLock.Tui`)
-- [ ] .NET 10 (`net10.0`) as TargetFramework
-- [ ] Magic packet generation in `WoLock.Core`
-- [ ] UDP sending (Async) with broadcast + configurable port/IP
+- [x] Create `WoLock.Core` class library (`net10.0`).
+- [x] Magic packet generation in `WoLock.Core`
+- [x] UDP sending (Async) with broadcast + configurable port/IP
+- [x] Create solution (`WoLock.slnx`, .NET 10 native format)
 
 ### Milestone 2 — Configuration & smart-guess
-- [ ] `appsettings.json` model (devices + profiles)
-- [ ] Smart-guess: local NIC IP → subnet → broadcast derivation
-- [ ] Override via config
-- [ ] Set up Serilog (non-persistent)
+- [x] `appsettings.json` model (devices + profiles)
+- [x] Smart-guess: local NIC IP → subnet → broadcast derivation
+- [x] Override via config
+- [x] Set up Serilog (non-persistent)
 
 ### Milestone 3 — TUI (Terminal.Gui + CLI)
-- [ ] Interactive menu (select device, wake)
-- [ ] CLI flags (`wol wake <device>`)
-- [ ] Status display (packet sent / device responds / no response)
+- [x] Interactive menu (select device, wake)
+- [x] CLI flags (`wol wake <device>`, `wol list`, `--ping`, `--timeout`, `--config`, `--help`)
+- [x] Status display (packet sent / device responds / no response)
+
+> **Current status:** Milestones 1–3 are implemented, build cleanly, and the CLI + interactive TUI have been verified. Milestone 4b (unit tests) is now implemented: `tests/WoLock.Core.Tests` contains 48 passing tests covering the core logic, and CI runs `dotnet test`. Milestones 4 (GUI) and 5 (packaging) are still pending.
 
 ### Milestone 4 — GUI (Avalonia)
 - [ ] Base layout + Dark/Light theme
@@ -233,7 +235,7 @@ context in new sessions.
 
 ---
 
-*Status: planning. This document is the source of truth for the implementation.*
+*Status: Milestones 1–3 implemented and verified (see [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) for the detailed progress table). This document remains the source of truth for the implementation.*
 
 *Important Rules:* 
 - git commits are only done by the User himself

@@ -8,6 +8,21 @@ reference for incremental development and can be used as context in new sessions
 
 ---
 
+## Progress (last updated: 2026-09-14)
+
+| Milestone | Status | Notes |
+|-----------|--------|-------|
+| 1 — Scaffold & Core | ✅ implemented | `WoLock.Core` builds on `net10.0`. Solution exists as `WoLock.slnx` (.NET 10 native format). |
+| 2 — Config & smart-guess | ✅ implemented | `DeviceConfig` / `ProfileConfig` / `WoLockConfig`, `ConfigLoader`, `BroadcastResolver` (smart-guess), Serilog via `WoLockLogger`. |
+| 3 — TUI + CLI | ✅ implemented + tested | CLI (`list`, `wake`, `--ping`, `--timeout`, `--config`, `--help`) and the interactive Terminal.Gui UI render and run. |
+| 4 — GUI (Avalonia) | ⬜ not started | |
+| 4b — Unit tests | ✅ implemented | `tests/WoLock.Core.Tests` covers `MacAddress`, `MagicPacket`, `WakeRequest`, `WakeRequestFactory`, `ConfigLoader`, `BroadcastResolver`, `WakeSender`, `PingChecker` (48 tests). CI runs `dotnet test`. |
+| 5 — Packaging | ⬜ not started | |
+
+Implemented and verified this session: correct hex MAC parsing, graceful `--ping` when ICMP is unavailable, `--help` no longer launches the TUI, and the test project's CPM fixed (whole solution restores/builds, placeholder test passes).
+
+---
+
 ## 0. Prerequisites & Conventions
 
 - **.NET 10** (`net10.0`) — see `global.json`.
@@ -29,22 +44,22 @@ reference for incremental development and can be used as context in new sessions
 Goal: working cross-platform Wake-on-LAN library with magic packet + UDP sending.
 
 ### Steps
-- [ ] Create the solution `WoLock.sln` at the repository root.
-- [ ] Create project `src/WoLock.Core/WoLock.Core.csproj` (class library, `net10.0`).
-- [ ] Add projects to the solution (`WoLock.Core`).
-- [ ] Add `.editorconfig` rules (already present at repo root).
+- [x] Create the solution at the repository root (`WoLock.slnx`, .NET 10 native format).
+- [x] Create project `src/WoLock.Core/WoLock.Core.csproj` (class library, `net10.0`).
+- [x] Add projects to the solution (`WoLock.Core`, `WoLock.Tui`, `WoLock.Core.Tests`).
+- [x] Add `.editorconfig` rules (already present at repo root).
 
 #### Core domain
-- [ ] `MagicPacket` — build the 102-byte magic packet (6× `0xFF` + MAC ×16).
-- [ ] `MacAddress` — parse/validate MAC strings (e.g. `84:47:09:88:78:56`).
-- [ ] `WakeRequest` — model: MAC, target IP(s), port(s), NIC, broadcast flag.
-- [ ] `WakeSender` — async UDP sending with `EnableBroadcast`, configurable port/IP(s).
-- [ ] Support sending to **multiple IPs and ports** (as in the legacy PowerShell script).
+- [x] `MagicPacket` — build the 102-byte magic packet (6× `0xFF` + MAC ×16).
+- [x] `MacAddress` — parse/validate MAC strings (e.g. `84:47:09:88:78:56`). Parses hex octets with `NumberStyles.HexNumber`.
+- [x] `WakeRequest` — model: MAC, target IP(s), port(s), NIC, broadcast flag.
+- [x] `WakeSender` — async UDP sending with `EnableBroadcast`, configurable port/IP(s).
+- [x] Support sending to **multiple IPs and ports** (as in the legacy PowerShell script).
 
 #### Cross-platform
-- [ ] Use `System.Net.Sockets.UdpClient` (available on all target platforms).
-- [ ] Clear feedback when `SO_BROADCAST` cannot be set or sending fails (log + throw).
-- [ ] Windows + Linux (Ethernet) supported; document limitations.
+- [x] Use `System.Net.Sockets.UdpClient` (available on all target platforms).
+- [x] Clear feedback when `SO_BROADCAST` cannot be set or sending fails (log + throw).
+- [x] Windows + Linux (Ethernet) supported; document limitations.
 
 ### Context (from planning)
 - Legacy script: `src/scripts/Send-WakeOnLan.ps1`
@@ -59,13 +74,13 @@ Goal: working cross-platform Wake-on-LAN library with magic packet + UDP sending
 Goal: load devices/profiles from `appsettings.json` with intelligent defaults.
 
 ### Steps
-- [ ] Add `Serilog` (Console + optional File sink) to all projects via CPM.
-- [ ] Configure Serilog in `Directory.Build.props`-driven startup (DEBUG/INFO, non-persistent by default).
-- [ ] Define config model: `DeviceConfig`, `ProfileConfig`, root `WoLockConfig`.
-- [ ] Load config from `appsettings.json` (per app, with environment override).
-- [ ] Implement **smart-guess**: detect local NIC IP → derive subnet → broadcast address.
-- [ ] Config values override smart-guess defaults where provided.
-- [ ] Support **multiple profiles** (optional); fall back to the detected profile when none defined.
+- [x] Add `Serilog` (Console + optional File sink) to all projects via CPM.
+- [x] Configure Serilog in startup (DEBUG/INFO, non-persistent by default) via `WoLockLogger.Configure`.
+- [x] Define config model: `DeviceConfig`, `ProfileConfig`, root `WoLockConfig`.
+- [x] Load config from `appsettings.json` (per app, with `WOLOCK_CONFIG` env override).
+- [x] Implement **smart-guess**: detect local NIC IP → derive subnet → broadcast address (`BroadcastResolver`).
+- [x] Config values override smart-guess defaults where provided (`WakeRequestFactory`).
+- [x] Support **multiple profiles** (optional); fall back to the detected profile when none defined.
 
 ### Context (from planning)
 - Non-configured values are derived intelligently (e.g. broadcast from local NIC IP).
@@ -79,13 +94,13 @@ Goal: load devices/profiles from `appsettings.json` with intelligent defaults.
 Goal: interactive terminal UI plus CLI flags for automation.
 
 ### Steps
-- [ ] Create project `src/WoLock.Tui/WoLock.Tui.csproj` (executable, `net10.0`).
-- [ ] Reference `WoLock.Core`.
-- [ ] Add `Terminal.Gui` via CPM.
-- [ ] Interactive menu: select device → wake (keyboard-driven).
-- [ ] CLI flags (e.g. `wol wake <device>`, `wol list`).
-- [ ] Status output: packet sent / device responds / no response.
-- [ ] Detailed logs on demand (extended view).
+- [x] Create project `src/WoLock.Tui/WoLock.Tui.csproj` (executable, `net10.0`).
+- [x] Reference `WoLock.Core`.
+- [x] Add `Terminal.Gui` via CPM.
+- [x] Interactive menu: select device → wake (keyboard-driven).
+- [x] CLI flags (`wol wake <device>`, `wol list`, `--ping`, `--timeout`, `--config`, `-h/--help`).
+- [x] Status output: packet sent / device responds / no response.
+- [x] Detailed logs on demand (extended view).
 
 ### Context (from planning)
 - Primary: Linux (CachyOS, Wayland) + Windows.
@@ -121,13 +136,21 @@ Goal: graphical UI (Windows/Linux desktop, Android-ready).
 Goal: cover the critical logic of `WoLock.Core`.
 
 ### Steps
-- [ ] Create test project `tests/WoLock.Core.Tests/WoLock.Core.Tests.csproj` (XUnit).
-- [ ] Reference `WoLock.Core`.
-- [ ] Tests for `MagicPacket` (102-byte layout, MAC ×16).
-- [ ] Tests for `MacAddress` parsing/validation.
-- [ ] Tests for `WakeRequest` defaults and validation.
-- [ ] Tests for config loading and smart-guess (local NIC → subnet → broadcast).
-- [ ] Wire tests into CI (`dotnet test`).
+- [x] Create test project `tests/WoLock.Core.Tests/WoLock.Core.Tests.csproj` (XUnit).
+- [x] Reference `WoLock.Core`.
+- [x] Tests for `MagicPacket` (102-byte layout, MAC ×16).
+- [x] Tests for `MacAddress` parsing/validation.
+- [x] Tests for `WakeRequest` defaults and validation.
+- [x] Tests for config loading and smart-guess (local NIC → subnet → broadcast).
+- [x] Tests for `WakeRequestFactory` (ports, targets, broadcast, additional IPs).
+- [x] Tests for `WakeSender` (via injected `IWakeUdpClient` factory).
+- [x] Tests for `BroadcastResolver` subnet math (`ComputeBroadcast`, `MaskFromPrefix`).
+- [x] Tests for `PingChecker` (IPv4 validation).
+- [x] Wire tests into CI (`dotnet test`).
+
+> 48 tests, all passing. Two bugs found and fixed while writing tests:
+> `BroadcastResolver.MaskFromPrefix(0)` returned `255.255.255.255` (C# shift-by-32 wrap),
+> and `WakeRequestFactory` ignored `additionalIps` when a `targetIp` was set.
 
 ## Milestone 5 — Refinement & packaging
 
@@ -147,8 +170,10 @@ Goal: polished, distributable builds.
 
 ## Open items (to clarify)
 
+- [x] Replace the placeholder unit test with real tests for `MagicPacket`, `MacAddress`, `WakeRequest`, config loading and smart-guess.
 - [ ] Android SDK/emulator available? (for later APK)
-- [ ] Should the TUI CLI run standalone without the interactive UI?
+- [ ] Android SDK/emulator available? (for later APK)
+- [ ] Should the TUI CLI also run standalone without the interactive UI?
 
 ---
 
