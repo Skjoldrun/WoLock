@@ -1,11 +1,12 @@
+using System.Net;
 using Terminal.Gui;
 using WoLock.Core;
 
 namespace WoLock.Tui.Interactive;
 
 /// <summary>
-/// The interactive Terminal.Gui front-end: a device list, a wake action, and
-/// a status display.
+/// The interactive Terminal.Gui front-end: a device list, a wake action, and a
+/// status display, styled with the OneDark Pro theme.
 /// </summary>
 public static class TuiApp
 {
@@ -22,43 +23,84 @@ public static class TuiApp
 
         Window root = new Window
         {
-            Title = "WoLock — Profile: " + service.ActiveProfileName,
+            Title = $"WoLock — {service.ActiveProfileName}",
             X = 0,
             Y = 0,
             Width = Dim.Fill(),
             Height = Dim.Fill(),
+            ColorScheme = OneDarkTheme.Window,
+        };
+
+        // Set on the existing border so the window title stays in the title bar.
+        root.Border.BorderStyle = BorderStyle.Rounded;
+        root.Border.BorderBrush = OneDarkTheme.Colors.Blue;
+
+        Label subtitle = new Label
+        {
+            Text = $"{service.Devices.Count} device(s)",
+            X = 0,
+            Y = 1,
+            Width = Dim.Fill(),
+            ColorScheme = OneDarkTheme.Title,
         };
 
         ListView listView = new ListView(names)
         {
             X = 0,
-            Y = 0,
-            Width = 40,
-            Height = Dim.Fill(3),
+            Y = 3,
+            Width = Dim.Percent(58),
+            Height = Dim.Fill(6),
+            ColorScheme = OneDarkTheme.List,
         };
 
-        Button wakeButton = new Button("Wake")
+        (Label mac, Label targets) = BuildDetails();
+        root.Add(listView, mac, targets);
+
+        Button wakeButton = new Button("_Wake")
         {
             X = 0,
-            Y = Pos.AnchorEnd(1),
+            Y = Pos.AnchorEnd(3),
             Height = 1,
+            ColorScheme = OneDarkTheme.Button,
         };
 
-        Label statusLabel = new Label
+        Label status = new Label
         {
-            Text = "Select a device and press Wake (or Enter). Press q to quit.",
-            X = 42,
-            Y = 0,
+            Text = "Ready.",
+            X = Pos.Percent(62),
+            Y = Pos.AnchorEnd(3),
             Width = Dim.Fill(),
-            Height = 3,
+            ColorScheme = OneDarkTheme.Window,
         };
 
-        root.Add(listView, wakeButton, statusLabel);
+        Label footer = new Label
+        {
+            Text = "  <Enter> wake   <q> quit  ",
+            X = 0,
+            Y = Pos.AnchorEnd(1),
+            Width = Dim.Fill(),
+            ColorScheme = OneDarkTheme.Window,
+        };
+
+        root.Add(subtitle, wakeButton, status, footer);
 
         void RefreshStatus(string message)
         {
-            statusLabel.Text = message;
+            status.Text = message;
             Application.Refresh();
+        }
+
+        void OnSelectionChanged()
+        {
+            int index = listView.SelectedItem;
+            if (index < 0 || index >= service.Devices.Count)
+            {
+                return;
+            }
+
+            Device device = service.Devices[index];
+            mac.Text = $"MAC  {device.Request.Mac}";
+            targets.Text = $"Targets  {FormatTargets(device.Request.Targets)}";
         }
 
         void DoWake()
@@ -90,10 +132,12 @@ public static class TuiApp
                 WakeStatus.Failed => $"{result.DeviceName}: failed. {result.Error}",
                 _ => result.DeviceName,
             };
+            status.ColorScheme = OneDarkTheme.StatusColor(result.Status);
             RefreshStatus(message);
         }
 
         wakeButton.Clicked += DoWake;
+        listView.SelectedItemChanged += _ => OnSelectionChanged();
         root.KeyDown += args =>
         {
             Key key = (Key)args.KeyEvent.KeyValue;
@@ -107,8 +151,37 @@ public static class TuiApp
             }
         };
 
+        OnSelectionChanged();
         Application.Run(root, _ => true);
         Application.Shutdown();
         return 0;
     }
+
+    private static (Label mac, Label targets) BuildDetails()
+    {
+        Label mac = new Label
+        {
+            Text = "MAC  —",
+            X = Pos.Percent(62),
+            Y = 3,
+            Width = Dim.Fill(),
+            ColorScheme = OneDarkTheme.Detail,
+        };
+
+        Label targets = new Label
+        {
+            Text = "Targets  —",
+            X = Pos.Percent(62),
+            Y = 6,
+            Width = Dim.Fill(),
+            ColorScheme = OneDarkTheme.Window,
+        };
+
+        return (mac, targets);
+    }
+
+    private static string FormatTargets(IList<IPEndPoint> targets) =>
+        targets.Count == 0
+            ? "—"
+            : string.Join(", ", targets.Select(t => $"{t.Address}:{t.Port}"));
 }

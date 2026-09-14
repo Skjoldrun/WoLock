@@ -14,12 +14,14 @@ reference for incremental development and can be used as context in new sessions
 |-----------|--------|-------|
 | 1 — Scaffold & Core | ✅ implemented | `WoLock.Core` builds on `net10.0`. Solution exists as `WoLock.slnx` (.NET 10 native format). |
 | 2 — Config & smart-guess | ✅ implemented | `DeviceConfig` / `ProfileConfig` / `WoLockConfig`, `ConfigLoader`, `BroadcastResolver` (smart-guess), Serilog via `WoLockLogger`. |
-| 3 — TUI + CLI | ✅ implemented + tested | CLI (`list`, `wake`, `--ping`, `--timeout`, `--config`, `--help`) and the interactive Terminal.Gui UI render and run. |
+| 3 — TUI + CLI | ✅ implemented + tested | CLI (`list`, `wake`, `--ping`, `--timeout`, `--config`, `--help`) and the interactive Terminal.Gui UI render and run. OneDark Pro dark theme applied to the interactive UI (`Interactive/OneDarkTheme.cs`). |
 | 4 — GUI (Avalonia) | ⬜ not started | |
 | 4b — Unit tests | ✅ implemented | `tests/WoLock.Core.Tests` covers `MacAddress`, `MagicPacket`, `WakeRequest`, `WakeRequestFactory`, `ConfigLoader`, `BroadcastResolver`, `WakeSender`, `PingChecker` (48 tests). CI runs `dotnet test`. |
 | 5 — Packaging | ⬜ not started | |
 
 Implemented and verified this session: correct hex MAC parsing, graceful `--ping` when ICMP is unavailable, `--help` no longer launches the TUI, and the test project's CPM fixed (whole solution restores/builds, placeholder test passes).
+
+Most recent session: OneDark Pro dark theme for the interactive TUI. New `src/WoLock.Tui/Interactive/OneDarkTheme.cs` (palette + per-control color schemes, outcome-based status colors) and a redesigned `TuiApp` (rounded blue window border with title bar, device list + detail panel for MAC/targets, colored wake button, outcome-colored status, footer hints). Verified by rendering the live UI under a PTY: correct OneDark Pro palette (blue/white/cyan/black + blue button), device list populates, no exceptions. 48 core tests pass, build clean (0 warnings/0 errors).
 
 ---
 
@@ -101,6 +103,7 @@ Goal: interactive terminal UI plus CLI flags for automation.
 - [x] CLI flags (`wol wake <device>`, `wol list`, `--ping`, `--timeout`, `--config`, `-h/--help`).
 - [x] Status output: packet sent / device responds / no response.
 - [x] Detailed logs on demand (extended view).
+- [x] OneDark Pro dark theme for the interactive TUI (`Interactive/OneDarkTheme.cs`): rounded window border, colored device list, detail lines, wake button, and outcome-based status colors. Terminal.Gui 1.17 has no truecolor, so the palette maps OneDark Pro RGB to the 16 console colors.
 
 ### Context (from planning)
 - Primary: Linux (CachyOS, Wayland) + Windows.
